@@ -1,0 +1,654 @@
+<!--
+  ==============================
+  EAT EXPRESS / DINE DASH — SINGLE-FILE WEBSITE (FULLY COMMENTED)
+  ==============================
+  • This file is self‑contained (HTML + CSS + JS) so you can drop it in Replit as index.html.
+  • Every major tag and concept is explained inline in comments for easy learning.
+  • Structure uses semantic HTML5 sections: header/nav/main/section/article/footer.
+  • Responsive layout without external libraries; only vanilla CSS + JS.
+  • Replace placeholder images/text/links as you like.
+-->
+
+<!DOCTYPE html>
+<!--
+  <!DOCTYPE html> tells the browser which HTML standard to use.
+  Here we use HTML5 (no version number), enabling modern elements like <header>, <main>, etc.
+-->
+<html lang="en">
+  <!--
+    <html> is the root element; all visible markup belongs inside it.
+    The lang attribute helps screen readers and search engines understand the document language.
+  -->
+
+  <head>
+    <!--
+      The <head> element holds metadata (data about the page) that isn’t directly shown to users.
+      It includes the title, character encoding, viewport, SEO tags, and CSS/JS references.
+    -->
+
+    <meta charset="utf-8" />
+    <!--
+      <meta charset="utf-8"> sets the character encoding so the page can render all common characters properly.
+    -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--
+      This meta tag ensures the page scales nicely on mobile devices by matching the viewport width to the device width.
+    -->
+
+    <title>Eat Express — Fast Food Delivery</title>
+    <!--
+      <title> sets the text that appears on the browser tab and in search results.
+    -->
+
+    <meta name="description" content="Eat Express delivers delicious fast food to your door. Order online for quick delivery and great taste." />
+    <!--
+      Helpful for SEO: a concise description of the page’s purpose.
+    -->
+
+    <link rel="icon" href="https://fav.farm/🍔" />
+    <!--
+      <link rel="icon"> sets the small icon shown on the browser tab. Here we use an emoji-based service for fun.
+    -->
+
+    <style>
+      /*
+        =====================
+        GLOBAL CSS (INTERNAL)
+        =====================
+        • We place CSS inside a <style> tag for a single-file setup. In production, you can move this to styles.css.
+        • The CSS below uses modern, simple responsive techniques (flex, grid) and a neutral color palette.
+      */
+
+      :root {
+        /* CSS custom properties (variables) for easy theming */
+        --bg: #0f172a;           /* background - slate-900 */
+        --bg-soft: #111827;      /* slightly lighter */
+        --card: #111827;         /* card background */
+        --text: #e5e7eb;         /* text - slate-200 */
+        --muted: #9ca3af;        /* secondary text */
+        --brand: #f59e0b;        /* amber-500 */
+        --brand-strong: #d97706; /* amber-600 */
+        --accent: #22d3ee;       /* cyan-400 */
+        --ok: #10b981;           /* green-500 */
+        --danger: #ef4444;       /* red-500 */
+        --ring: rgba(34, 211, 238, 0.4);
+        --radius: 16px;
+        --shadow: 0 10px 30px rgba(0,0,0,.35);
+      }
+
+      /* A simple CSS reset to reduce browser inconsistencies */
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0; /* remove default body margin */
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+        color: var(--text);
+        background: radial-gradient(1200px 600px at 10% -10%, #1f2937, transparent 60%),
+                    radial-gradient(1200px 600px at 90% -20%, #0b3a46, transparent 55%),
+                    var(--bg);
+        line-height: 1.6;
+      }
+
+      a { color: inherit; text-decoration: none; }
+      img { max-width: 100%; display: block; }
+      button { font: inherit; }
+
+      /* Utility classes */
+      .container {
+        width: min(1100px, 92%);
+        margin: 0 auto; /* center */
+      }
+      .section { padding: 80px 0; }
+      @media (max-width: 640px) { .section { padding: 56px 0; } }
+
+      /*
+        =====================
+        HEADER + NAVIGATION
+        =====================
+      */
+      header {
+        position: sticky; /* stays at top while scrolling */
+        top: 0;
+        z-index: 50; /* ensures header sits above other content */
+        backdrop-filter: blur(10px); /* glassy look */
+        background: linear-gradient(to bottom, rgba(15,23,42,.9), rgba(15,23,42,.6));
+        border-bottom: 1px solid rgba(255,255,255,.06);
+      }
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 14px 0;
+      }
+      .brand {
+        display: inline-flex; align-items: center; gap: 10px;
+        font-weight: 800; letter-spacing: .3px;
+      }
+      .brand .logo {
+        width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center;
+        background: radial-gradient(circle at 30% 30%, var(--brand), var(--brand-strong));
+        box-shadow: 0 6px 18px rgba(245, 158, 11, .35);
+      }
+      .brand span { font-size: 18px; }
+
+      .nav-links {
+        display: flex; align-items: center; gap: 22px; font-weight: 600; color: var(--muted);
+      }
+      .nav-links a:hover { color: var(--text); }
+
+      .cta {
+        display: inline-flex; align-items: center; gap: 10px;
+        background: linear-gradient(135deg, var(--brand), var(--brand-strong));
+        color: #000; font-weight: 800; padding: 10px 16px; border-radius: 999px;
+        box-shadow: 0 10px 22px rgba(245, 158, 11, .3);
+        border: none; cursor: pointer;
+      }
+      .cta:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+
+      /* Mobile nav toggle (hamburger) */
+      .hamburger { display: none; }
+      @media (max-width: 840px) {
+        .nav-links { display: none; }
+        .hamburger { display: inline-flex; background: transparent; border: 1px solid rgba(255,255,255,.2); border-radius: 10px; padding: 8px; }
+      }
+
+      /*
+        =====================
+        HERO SECTION
+        =====================
+      */
+      .hero { padding: 72px 0 40px; }
+      .hero-grid {
+        display: grid; gap: 28px; align-items: center;
+        grid-template-columns: 1.2fr 1fr;
+      }
+      @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; } }
+
+      .badge {
+        display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 999px;
+        background: rgba(34,211,238,.1); color: var(--accent); font-weight: 700; font-size: 12px; letter-spacing: .4px;
+        border: 1px solid rgba(34,211,238,.25);
+      }
+      .hero h1 { font-size: clamp(28px, 4vw, 48px); line-height: 1.15; margin: 14px 0; }
+      .lead { color: var(--muted); font-size: clamp(14px, 2.2vw, 18px); }
+
+      .hero-card {
+        background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+        border: 1px solid rgba(255,255,255,.08);
+        border-radius: var(--radius);
+        padding: 18px; box-shadow: var(--shadow);
+      }
+
+      /*
+        =====================
+        FEATURES SECTION
+        =====================
+      */
+      .features { background: linear-gradient(180deg, rgba(255,255,255,.02), transparent); }
+      .features-grid {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+      }
+      @media (max-width: 900px) { .features-grid { grid-template-columns: 1fr; } }
+      .feature {
+        background: var(--card); border: 1px solid rgba(255,255,255,.06); border-radius: var(--radius);
+        padding: 20px; box-shadow: var(--shadow);
+      }
+      .feature h3 { margin: 8px 0 6px; }
+      .muted { color: var(--muted); }
+
+      /*
+        =====================
+        MENU CARDS SECTION
+        =====================
+      */
+      .menu-grid {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+      }
+      @media (max-width: 1000px) { .menu-grid { grid-template-columns: repeat(2, 1fr); } }
+      @media (max-width: 640px) { .menu-grid { grid-template-columns: 1fr; } }
+
+      .card {
+        background: var(--card); border: 1px solid rgba(255,255,255,.06); border-radius: var(--radius);
+        overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column;
+      }
+      .card img { height: 180px; object-fit: cover; }
+      .card-body { padding: 16px; display: grid; gap: 8px; }
+      .price { font-weight: 800; color: var(--accent); }
+      .add { margin-top: 6px; border: 1px solid rgba(255,255,255,.12); border-radius: 10px; background: rgba(255,255,255,.04); padding: 10px; cursor: pointer; font-weight: 700; }
+      .add:hover { border-color: rgba(255,255,255,.22); }
+
+      /*
+        =====================
+        TESTIMONIALS
+        =====================
+      */
+      .testimonials {
+        background: linear-gradient(180deg, transparent, rgba(255,255,255,.02));
+      }
+      .quote {
+        background: var(--card); border: 1px solid rgba(255,255,255,.06); border-radius: var(--radius);
+        padding: 20px; box-shadow: var(--shadow);
+      }
+
+      /*
+        =====================
+        CONTACT FORM
+        =====================
+      */
+      form { display: grid; gap: 14px; }
+      .field { display: grid; gap: 8px; }
+      label { font-weight: 700; }
+      input, textarea {
+        background: rgba(255,255,255,.04); color: var(--text); border: 1px solid rgba(255,255,255,.12);
+        padding: 12px 14px; border-radius: 10px;
+      }
+      input:focus, textarea:focus { outline: 3px solid var(--ring); border-color: transparent; }
+      textarea { min-height: 120px; resize: vertical; }
+      .inline {
+        display: grid; grid-template-columns: 2fr 1fr; gap: 12px;
+      }
+      @media (max-width: 640px) { .inline { grid-template-columns: 1fr; } }
+
+      /*
+        =====================
+        FOOTER
+        =====================
+      */
+      footer {
+        border-top: 1px solid rgba(255,255,255,.06);
+        background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
+      }
+      .footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 20px; }
+      @media (max-width: 900px) { .footer-grid { grid-template-columns: 1fr; } }
+      .tiny { font-size: 12px; color: var(--muted); }
+    </style>
+  </head>
+
+  <body>
+    <!--
+      Everything the user sees goes inside <body>.
+      We break the page into a header, main content (<main>), and footer for clarity and accessibility.
+    -->
+
+    <header>
+      <!--
+        <header> is a semantic container typically used for branding and the main site navigation.
+      -->
+      <div class="container nav" role="navigation" aria-label="Primary">
+        <!--
+          role="navigation" + aria-label describe the purpose for assistive tech.
+        -->
+        <a href="#home" class="brand">
+          <!-- The brand/logo link that jumps to the top of the page -->
+          <span class="logo" aria-hidden="true">🍔</span>
+          <span>Eat Express</span>
+        </a>
+
+        <nav class="nav-links" aria-label="Site">
+          <!--
+            <nav> groups navigation links. Keeping links in a list is common, but inline is okay for simple headers.
+          -->
+          <a href="#features">Features</a>
+          <a href="#menu">Menu</a>
+          <a href="#testimonials">Reviews</a>
+          <a href="#contact">Contact</a>
+        </nav>
+
+        <button class="cta" id="orderBtn" type="button" aria-label="Order now">
+          <!-- Buttons use type="button" to avoid accidental form submits. -->
+          <span>Order Now</span>
+        </button>
+
+        <!-- Mobile hamburger button toggles the small-screen menu -->
+        <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+          ☰
+        </button>
+      </div>
+    </header>
+
+    <main id="home">
+      <!--
+        <main> wraps the unique content of the page. There should be only one <main> per page.
+      -->
+
+      <!-- ================= HERO ================= -->
+      <section class="hero section" aria-labelledby="hero-title">
+        <!-- <section> groups related content; aria-labelledby points to an internal heading for accessibility -->
+        <div class="container hero-grid">
+          <div>
+            <span class="badge">⚡ 30‑minute delivery in your area</span>
+            <h1 id="hero-title">Delicious food, delivered fast.</h1>
+            <p class="lead">From hot burgers to cheesy pizzas — track your order live, earn rewards, and enjoy sizzling deals all day.</p>
+            <div style="display:flex; gap:12px; margin-top:14px; flex-wrap: wrap;">
+              <a class="cta" href="#menu">Browse Menu</a>
+              <a class="add" href="#features" style="display:inline-flex; align-items:center; gap:8px; text-decoration:none;">
+                Learn more →
+              </a>
+            </div>
+          </div>
+
+          <aside class="hero-card" aria-label="Order summary demo card">
+            <!--
+              <aside> contains tangentially related content. Here we fake a mini order card for visual interest.
+            -->
+            <div style="display:flex; align-items:center; gap:12px;">
+              <img src="https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=800&auto=format&fit=crop" alt="Juicy cheeseburger" width="88" height="88" style="border-radius:12px;" />
+              <div>
+                <strong>Classic Cheeseburger</strong>
+                <div class="muted">x1 • Extra cheese</div>
+              </div>
+              <strong class="price" style="margin-left:auto;">₹199</strong>
+            </div>
+            <hr style="margin:16px 0; border: none; border-top: 1px solid rgba(255,255,255,.1);" />
+            <div style="display:flex; align-items:center; gap:12px;">
+              <img src="https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=800&auto=format&fit=crop" alt="Pepperoni pizza slice" width="88" height="88" style="border-radius:12px;" />
+              <div>
+                <strong>Pepperoni Slice</strong>
+                <div class="muted">x2 • Spicy</div>
+              </div>
+              <strong class="price" style="margin-left:auto;">₹258</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px;">
+		
+              <span class="muted">ETA: 25–30 min</span>
+              <button class="cta" type="button">Checkout</button>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ================= FEATURES ================= -->
+      <section id="features" class="features section" aria-labelledby="features-title">
+        <div class="container">
+          <h2 id="features-title">Why choose Eat Express?</h2>
+          <p class="muted">We combine speed, taste, and safety to deliver a five‑star experience.</p>
+          <div class="features-grid" role="list">
+            <!-- role="list" + each .feature as role="listitem" improves semantics when not using <ul> -->
+            <article class="feature" role="listitem">
+              <!-- <article> denotes a self‑contained block (could stand alone if syndicated). -->
+              <div class="badge" aria-hidden="true">⚡ Fast</div>
+              <h3>Lightning‑fast delivery</h3>
+              <p class="muted">Average delivery time under 30 minutes in supported areas with live tracking.</p>
+            </article>
+            <article class="feature" role="listitem">
+              <div class="badge" aria-hidden="true">🧼 Safe</div>
+              <h3>Hygiene first</h3>
+              <p class="muted">Partner kitchens follow strict safety checks; riders use sealed thermal bags.</p>
+            </article>
+            <article class="feature" role="listitem">
+              <div class="badge" aria-hidden="true">💳 Easy</div>
+              <h3>Pay your way</h3>
+              <p class="muted">UPI, cards, netbanking, and cash on delivery supported for your convenience.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= MENU ================= -->
+      <section id="menu" class="section" aria-labelledby="menu-title">
+        <div class="container">
+          <h2 id="menu-title">Popular picks</h2>
+          <p class="muted">Hand‑picked bestsellers. Click “Add to cart” to simulate adding items (demo only).</p>
+
+          <div class="menu-grid" id="menuGrid">
+            <!-- Each product card is a semantic <article> as it can stand on its own. -->
+
+            <article class="card" data-id="1">
+              <img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?q=80&w=1200&auto=format&fit=crop" alt="Crispy French fries" />
+              <div class="card-body">
+                <h3>Loaded Fries</h3>
+                <p class="muted">Crispy fries with cheese sauce, jalapeños, and herbs.</p>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span class="price">₹149</span>
+                  <button class="add" type="button" data-name="Loaded Fries" data-price="149">Add to cart</button>
+                </div>
+              </div>
+            </article>
+
+            <article class="card" data-id="2">
+              <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=1200&auto=format&fit=crop" alt="Cheesy pepperoni pizza" />
+              <div class="card-body">
+                <h3>Pepperoni Pizza</h3>
+                <p class="muted">Wood‑fired base topped with spicy pepperoni & mozzarella.</p>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span class="price">₹399</span>
+                  <button class="add" type="button" data-name="Pepperoni Pizza" data-price="399">Add to cart</button>
+                </div>
+              </div>
+            </article>
+
+            <article class="card" data-id="3">
+              <img src="https://i.fbcd.co/products/original/c-1000-designbundle-chocolate-milkshake-closeup-27-09-02bd4802512ec5a2fb72cf1360441f914773ce58f016461aa0c4cc3ae82b1783.jpg" alt="Chocolate milkshake" />
+              <div class="card-body">
+                <h3>Choco Shake</h3>
+                <p class="muted">Rich, creamy, and topped with whipped cream.</p>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span class="price">₹129</span>
+                  <button class="add" type="button" data-name="Choco Shake" data-price="129">Add to cart</button>
+                </div>
+              </div>
+            </article>
+
+          </div>
+
+          <!-- A simple mini-cart output area for demo purposes -->
+          <div id="cart" style="margin-top:22px; display:none;">
+            <div class="quote">
+              <h3 style="margin:0 0 8px;">Your cart</h3>
+              <ul id="cartList" style="list-style: none; padding-left: 0; margin: 0; display:grid; gap:8px;"></ul>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                <strong>Total:</strong>
+                <strong id="cartTotal">₹0</strong>
+              </div>
+              <div style="display:flex; gap:10px; margin-top:10px;">
+                <button class="cta" type="button" id="checkout">Checkout</button>
+                <button class="add" type="button" id="clearCart">Clear</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ================= TESTIMONIALS ================= -->
+      <section id="testimonials" class="testimonials section" aria-labelledby="reviews-title">
+        <div class="container">
+          <h2 id="reviews-title">What customers say</h2>
+          <div class="features-grid">
+            <figure class="quote">
+              <!-- <figure> pairs visual content with a caption; here we use it for a quoted block. -->
+              <blockquote style="margin:0;">
+                “The delivery was super quick and the burger was still piping hot. New favorite!”
+              </blockquote>
+              <figcaption class="muted">— Aditi, Surat</figcaption>
+            </figure>
+
+            <figure class="quote">
+              <blockquote style="margin:0;">
+                “Affordable, tasty, and reliable. Their pizza deals are unbeatable.”
+              </blockquote>
+              <figcaption class="muted">— Rohan, Ahmedabad</figcaption>
+            </figure>
+
+            <figure class="quote">
+              <blockquote style="margin:0;">
+                “Great app experience. Love the live tracking and cashback rewards.”
+              </blockquote>
+              <figcaption class="muted">— Neha, Vadodara</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= CONTACT ================= -->
+      <section id="contact" class="section" aria-labelledby="contact-title">
+        <div class="container">
+          <h2 id="contact-title">Contact us</h2>
+          <p class="muted">Have questions or feedback? Send us a message and we’ll get back soon.</p>
+
+          <form id="contactForm" novalidate>
+            <!--
+              The novalidate attribute disables default browser validation bubbles so we can show custom messages.
+            -->
+            <div class="field">
+              <label for="name">Name</label>
+              <input id="name" name="name" type="text" placeholder="Your full name" required minlength="2" />
+            </div>
+
+            <div class="inline">
+              <div class="field">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" placeholder="you@example.com" required />
+              </div>
+              <div class="field">
+                <label for="phone">Phone</label>
+                <input id="phone" name="phone" type="tel" placeholder="98765 43210" pattern="[0-9\s+-]{7,15}" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="message">Message</label>
+              <textarea id="message" name="message" placeholder="How can we help?" required></textarea>
+            </div>
+
+            <button class="cta" type="submit">Send message</button>
+            <p id="formMsg" class="muted" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer aria-labelledby="footer-title">
+      <!--
+        <footer> is a semantic container for site-wide secondary info and links.
+      -->
+      <div class="container section" style="padding-top: 32px; padding-bottom: 32px;">
+        <h2 id="footer-title" class="visually-hidden" style="position:absolute; left:-9999px;">Footer</h2>
+        <!-- The above visually-hidden heading aids screen reader navigation without cluttering the UI. -->
+
+        <div class="footer-grid">
+          <div>
+            <a href="#home" class="brand"><span class="logo" aria-hidden="true">🍔</span><span>Eat Express</span></a>
+            <p class="muted" style="margin-top:10px;">Fast, fresh, and affordable delivery across your city.</p>
+          </div>
+
+          <nav aria-label="Footer">
+            <strong>Links</strong>
+            <ul style="list-style:none; padding-left:0; display:grid; gap:8px; margin-top:8px;">
+              <li><a href="#features">Features</a></li>
+              <li><a href="#menu">Menu</a></li>
+              <li><a href="#testimonials">Reviews</a></li>
+              <li><a href="#contact">Contact</a></li>
+            </ul>
+          </nav>
+
+          <div>
+            <strong>Contact</strong>
+            <ul style="list-style:none; padding-left:0; display:grid; gap:8px; margin-top:8px;">
+              <li>Email: support@eatexpress.example</li>
+              <li>Phone: +91 98765 43210</li>
+              <li>Hours: 10:00 – 23:00</li>
+            </ul>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; gap:12px; margin-top:20px; flex-wrap:wrap;">
+          <small class="tiny">© <span id="year"></span> Eat Express. All rights reserved.</small>
+          <small class="tiny">Made with ❤ for learning (demo site).</small>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      /*
+        =====================
+        VANILLA JS INTERACTIONS
+        =====================
+        We keep scripting minimal and accessible.
+      */
+
+      // Helper: get elements once
+      const $ = (sel, scope=document) => scope.querySelector(sel);
+      const $$ = (sel, scope=document) => Array.from(scope.querySelectorAll(sel));
+
+      // Update footer year dynamically
+      $('#year').textContent = new Date().getFullYear();
+
+      // Mobile menu toggle (for small screens)
+      const hamburger = $('#hamburger');
+      const navLinks = $('.nav-links');
+      hamburger?.addEventListener('click', () => {
+        const isOpen = navLinks.style.display === 'flex';
+        navLinks.style.display = isOpen ? 'none' : 'flex';
+        navLinks.style.flexDirection = 'column';
+        navLinks.style.gap = '12px';
+        hamburger.setAttribute('aria-expanded', String(!isOpen));
+      });
+
+      // Simulated cart logic (client-only demo)
+      const cart = [];
+      const cartEl = $('#cart');
+      const cartList = $('#cartList');
+      const cartTotal = $('#cartTotal');
+
+      function renderCart(){
+        if(cart.length === 0){
+          cartEl.style.display = 'none';
+          return;
+        }
+        cartEl.style.display = 'block';
+        cartList.innerHTML = cart.map(item => `<li style="display:flex; justify-content:space-between; align-items:center;">${item.name} × ${item.qty}<strong>₹${item.qty*item.price}</strong></li>`).join('');
+        const total = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
+        cartTotal.textContent = `₹${total}`;
+      }
+
+      $$('.add').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const name = btn.dataset.name;
+          const price = Number(btn.dataset.price || 0);
+          const existing = cart.find(i => i.name === name);
+          if(existing){ existing.qty += 1; } else { cart.push({ name, price, qty: 1 }); }
+          renderCart();
+        });
+      });
+
+      // Checkout/clear actions
+      $('#checkout')?.addEventListener('click', () => {
+        alert('This is a demo. Hook this to your payment/checkout flow.');
+      });
+      $('#clearCart')?.addEventListener('click', () => {
+        cart.length = 0; renderCart();
+      });
+
+      // Contact form validation (basic, client-side)
+      const form = $('#contactForm');
+      const formMsg = $('#formMsg');
+      form.addEventListener('submit', (e) => {
+        e.preventDefault(); // stop real submit (we’re in demo mode)
+
+        // Basic validity check using HTML5 constraints
+        if(!form.checkValidity()){
+          formMsg.textContent = 'Please fill in the required fields correctly.';
+          formMsg.style.color = 'var(--danger)';
+          return;
+        }
+
+        // Build a fake payload from form fields
+        const data = Object.fromEntries(new FormData(form));
+        console.log('Form data (demo):', data);
+
+        // Simulate success feedback
+        formMsg.textContent = 'Thanks! Your message was sent.';
+        formMsg.style.color = 'var(--ok)';
+        form.reset();
+      });
+
+      // "Order Now" button jumps to menu
+      $('#orderBtn').addEventListener('click', () => {
+        document.getElementById('menu').scrollIntoView({ behavior: 'smooth' });
+      });
+    </script>
+  </body>
+</html>
